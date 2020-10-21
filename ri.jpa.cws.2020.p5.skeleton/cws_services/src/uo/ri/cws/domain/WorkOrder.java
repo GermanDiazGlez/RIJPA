@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import alb.util.assertion.ArgumentChecks;
+
 public class WorkOrder {
 	public enum WorkOrderStatus {
 		OPEN,
@@ -23,6 +25,20 @@ public class WorkOrder {
 	private Mechanic mechanic;
 	private Invoice invoice;
 	private Set<Intervention> interventions = new HashSet<>();
+
+	public WorkOrder(Vehicle vehicle) { //Si paso el atributo de otra clase en el constructor, tengo que hacer el vinculo
+		super();
+		this.date = LocalDateTime.now();
+		ArgumentChecks.isNotNull(vehicle);
+
+		Associations.Fix.link(vehicle, this);
+	}
+
+	public WorkOrder(Vehicle vehicle, String description) {
+		this(vehicle);
+		ArgumentChecks.isNotEmpty(description);
+		this.description = description;
+	}
 
 	/**
 	 * Changes it to INVOICED state given the right conditions
@@ -115,4 +131,70 @@ public class WorkOrder {
 		this.invoice = invoice;
 	}
 
+	public LocalDateTime getDate() {
+		return date;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public WorkOrderStatus getStatus() {
+		return status;
+	}
+
+	public Vehicle getVehicle() {
+		return vehicle;
+	}
+
+	public Mechanic getMechanic() {
+		return mechanic;
+	}
+
+	public Invoice getInvoice() {
+		return invoice;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
+		result = prime * result + ((vehicle == null) ? 0 : vehicle.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		WorkOrder other = (WorkOrder) obj;
+		if (date == null) {
+			if (other.date != null)
+				return false;
+		} else if (!date.equals(other.date))
+			return false;
+		if (vehicle == null) {
+			if (other.vehicle != null)
+				return false;
+		} else if (!vehicle.equals(other.vehicle))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "WorkOrder [date=" + date + ", description=" + description + ", amount=" + amount + ", status=" + status
+				+ ", vehicle=" + vehicle + "]";
+	}
+
+	
 }

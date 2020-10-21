@@ -3,6 +3,8 @@ package uo.ri.cws.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import alb.util.assertion.ArgumentChecks;
+
 public class Mechanic {
 	// natural attributes
 	private String dni;
@@ -12,6 +14,22 @@ public class Mechanic {
 	// accidental attributes
 	private Set<WorkOrder> assigned = new HashSet<>();
 	private Set<Intervention> interventions = new HashSet<>();
+	
+	
+	public Mechanic(String dni) {
+		super();
+		this.dni = dni;
+	}
+
+	public Mechanic(String dni, String surname, String name) {
+		this(dni);
+		ArgumentChecks.isNotEmpty(surname);
+		ArgumentChecks.isNotEmpty(name);
+		this.surname = surname;
+		this.name = name;
+	}
+
+
 
 	public Set<WorkOrder> getAssigned() {
 		return new HashSet<>( assigned );
@@ -29,4 +47,59 @@ public class Mechanic {
 		return interventions;
 	}
 
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((dni == null) ? 0 : dni.hashCode());
+		return result;
+	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Mechanic other = (Mechanic) obj;
+		if (dni == null) {
+			if (other.dni != null)
+				return false;
+		} else if (!dni.equals(other.dni))
+			return false;
+		return true;
+	}
+
+
+
+	public String getDni() {
+		return dni;
+	}
+
+
+
+	public String getSurname() {
+		return surname;
+	}
+
+
+
+	public String getName() {
+		return name;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "Mechanic [dni=" + dni + ", surname=" + surname + ", name=" + name + "]";
+	}
+
+	
 }

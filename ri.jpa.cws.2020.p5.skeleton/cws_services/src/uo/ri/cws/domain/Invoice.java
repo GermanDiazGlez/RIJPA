@@ -21,6 +21,7 @@ public class Invoice {
 
 	public Invoice(Long number) {
 		// call full constructor with sensible defaults
+		this(number, LocalDate.now(), List.of());
 	}
 
 	public Invoice(Long number, LocalDate date) {
@@ -92,5 +93,57 @@ public class Invoice {
 	Set<Charge> _getCharges() {
 		return charges;
 	}
+
+	public Long getNumber() {
+		return number;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public double getVat() {
+		return vat;
+	}
+
+	public InvoiceStatus getStatus() {
+		return status;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((number == null) ? 0 : number.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Invoice other = (Invoice) obj;
+		if (number == null) {
+			if (other.number != null)
+				return false;
+		} else if (!number.equals(other.number))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Invoice [number=" + number + ", date=" + date + ", amount=" + amount + ", vat=" + vat + ", status="
+				+ status + "]";
+	}
+	
 
 }
