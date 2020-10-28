@@ -11,12 +11,13 @@ public class Substitution {
 	private Intervention intervention;
 	
 
-	public Substitution(SparePart sparePart, Intervention intervention) {
+	public Substitution(SparePart sparePart, Intervention intervention, int quantity) {
 		super();
 		ArgumentChecks.isNotNull(sparePart);
 		ArgumentChecks.isNotNull(intervention);
 
 		Associations.Sustitute.link(sparePart, this, intervention);
+		this.quantity = quantity;
 	}
 
 	void _setSparePart(SparePart sparePart) {

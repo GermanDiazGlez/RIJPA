@@ -73,12 +73,23 @@ public class Associations {
 
 	public static class Charges {
 
-		public static void link(PaymentMean pm, Charge charge, Invoice inovice) {
-			// TODO Auto-generated method stub
+		public static void link(PaymentMean pm, Charge charge, Invoice invoice) {
+			charge._setPaymentMean(pm);
+			charge._setInvoice(invoice);
+			
+			pm._getCharges().add(charge);
+			invoice._getCharges().add(charge);
 		}
 
 		public static void unlink(Charge charge) {
-			// TODO Auto-generated method stub
+			PaymentMean pm = charge.getPaymentMean();
+			Invoice invoice = charge.getInvoice();
+			
+			pm._getCharges().remove(charge);
+			invoice._getCharges().remove(charge);
+			
+			charge._setInvoice(null);
+			charge._setPaymentMean(null);
 		}
 
 	}

@@ -24,6 +24,13 @@ public class SparePart {
 		this.price = price;
 		this.substitutions = substitutions;
 	}
+	
+	public SparePart(String code, String description, double price) {
+		super();
+		this.code = code;
+		this.description = description;
+		this.price = price;
+	}
 
 	public Set<Substitution> getSustitutions() {
 		return new HashSet<>( substitutions );

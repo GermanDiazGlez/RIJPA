@@ -17,12 +17,13 @@ public class Intervention {
 	private Set<Substitution> substitutions = new HashSet<>();
 	
 	
-	public Intervention(WorkOrder workOrder, Mechanic mechanic) {
+	public Intervention(Mechanic mechanic, WorkOrder workOrder, int minutes) {
 		super();
 		this.date = LocalDateTime.now();
 		ArgumentChecks.isNotNull(workOrder);
 		ArgumentChecks.isNotNull(mechanic);
 		Associations.Intervene.link(workOrder, this, mechanic);
+		this.minutes = minutes;
 	}
 	
 

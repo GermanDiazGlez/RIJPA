@@ -12,7 +12,9 @@ public class Charge {
 		this.amount = amount;
 		// store the amount
 		// increment the paymentMean accumulated -> paymentMean.pay( amount )
+		paymentMean.pay( amount );
 		// link invoice, this and paymentMean
+		Associations.Charges.link(paymentMean, this, invoice);
 	}
 
 	/**
@@ -25,4 +27,31 @@ public class Charge {
 		// unlinks invoice, this and paymentMean
 	}
 
+	public double getAmount() {
+		return amount;
+	}
+
+	public Invoice getInvoice() {
+		return invoice;
+	}
+
+	public PaymentMean getPaymentMean() {
+		return paymentMean;
+	}
+	
+	void _setPaymentMean(PaymentMean paymentMean) {
+		this.paymentMean = paymentMean;
+	}
+	
+	void _setInvoice(Invoice invoice) {
+		this.invoice = invoice;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Charge [amount=" + amount + ", invoice=" + invoice + ", paymentMean=" + paymentMean + "]";
+	}
+
+	
 }
