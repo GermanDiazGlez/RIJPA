@@ -1,15 +1,23 @@
 package uo.ri.cws.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+
 import alb.util.assertion.ArgumentChecks;
 
+@Entity
 public class Substitution {
 	// natural attributes
 	private int quantity;
+	private double totalPrice;
 
 	// accidental attributes
+	@ManyToOne
 	private SparePart sparePart;
+	@ManyToOne
 	private Intervention intervention;
 	
+	Substitution() {}
 
 	public Substitution(SparePart sparePart, Intervention intervention, int quantity) {
 		super();
@@ -77,6 +85,9 @@ public class Substitution {
 		return intervention;
 	}
 	
-	
+	public double getTotalPrice(){
+		totalPrice = sparePart.getPrice() * quantity;
+		return totalPrice;
+	}
 
 }

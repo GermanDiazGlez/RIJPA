@@ -3,15 +3,24 @@ package uo.ri.cws.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
+@Entity
 public class SparePart {
 	// natural attributes
+	@Column (unique = true)
 	private String code;
 	private String description;
 	private double price;
 
 	// accidental attributes
+	@OneToMany (mappedBy="sparePart")
 	private Set<Substitution> substitutions = new HashSet<>();
 
+	SparePart() {}
+	
 	public SparePart(String code) {
 		super();
 		this.code = code;

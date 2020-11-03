@@ -4,6 +4,10 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
 import alb.util.assertion.ArgumentChecks;
 
 @Entity
@@ -13,10 +17,17 @@ public class Intervention {
 	private int minutes;
 
 	// accidental attributes
+	@ManyToOne
 	private WorkOrder workOrder;
+	@ManyToOne
 	private Mechanic mechanic;
+	
+	private double amount;
+
+	@OneToMany (mappedBy="intervention")
 	private Set<Substitution> substitutions = new HashSet<>();
 	
+	Intervention() {}
 	
 	public Intervention(Mechanic mechanic, WorkOrder workOrder, int minutes) {
 		super();
@@ -32,24 +43,17 @@ public class Intervention {
 		return date;
 	}
 
-
-
 	public int getMinutes() {
 		return minutes;
 	}
 
-
-
 	public WorkOrder getWorkOrder() {
 		return workOrder;
 	}
-
 	
 	public Mechanic getMechanic() {
 		return mechanic;
 	}
-
-
 
 	void _setWorkOrder(WorkOrder workOrder) {
 		this.workOrder = workOrder;
@@ -66,7 +70,18 @@ public class Intervention {
 	Set<Substitution> _getSubstitutions() {
 		return substitutions;
 	}
-
+	
+	public double getAmount() {
+		totalAmount();
+		return amount;
+	}
+	
+	public void totalAmount() {
+		for (Substitution substitution : substitutions) {
+			amount += substitution.getTotalPrice();
+		}
+		amount += minutes / 60 * 50;
+	}
 
 
 	@Override

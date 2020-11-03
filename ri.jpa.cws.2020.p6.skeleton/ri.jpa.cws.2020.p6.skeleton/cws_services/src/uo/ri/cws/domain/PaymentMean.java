@@ -3,20 +3,32 @@ package uo.ri.cws.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+@Entity
 public abstract class PaymentMean {
 	// natural attributes
 	private double accumulated = 0.0;
 
 	// accidental attributes
+	@ManyToOne
 	private Client client;
+	
+	@OneToMany (mappedBy="paymentMean") 
 	private Set<Charge> charges = new HashSet<>();
 
-
-
-
+	PaymentMean(){}
 
 	public void pay(double importe) {
-		this.accumulated += importe;
+		System.out.println("Importe" + importe);
+		this.setAccumulated(this.getAccumulated() + importe);
+		System.out.println("Acumulated despues" + accumulated);
+	}
+
+	void setAccumulated(double accumulated) {
+		this.accumulated = accumulated;
 	}
 
 	void _setClient(Client client) {
@@ -34,14 +46,12 @@ public abstract class PaymentMean {
 	public double getAccumulated() {
 		return accumulated;
 	}
-
-	void setClient(Client client) {
-		this.client = client;
-	}
 	
 	public Client getClient() {
 		return client;
 	}
+	
+	abstract double getAvailable();
 
 	@Override
 	public int hashCode() {

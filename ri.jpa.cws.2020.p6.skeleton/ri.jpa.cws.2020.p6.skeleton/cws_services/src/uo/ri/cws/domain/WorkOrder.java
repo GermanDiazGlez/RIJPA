@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.Transient;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import alb.util.assertion.ArgumentChecks;
 
@@ -26,12 +27,13 @@ public class WorkOrder {
 	private WorkOrderStatus status = WorkOrderStatus.OPEN;
 
 	// accidental attributes
-	
+	@ManyToOne
 	private Vehicle vehicle;
-	@Transient
+	@ManyToOne
 	private Mechanic mechanic;
-	@Transient
+	@ManyToOne
 	private Invoice invoice;
+	@OneToMany (mappedBy="workOrder")
 	private Set<Intervention> interventions = new HashSet<>();
 
 	public WorkOrder(Vehicle vehicle) { //Si paso el atributo de otra clase en el constructor, tengo que hacer el vinculo
@@ -57,7 +59,8 @@ public class WorkOrder {
 	 *  - The work order is not linked with the invoice
 	 */
 	public void markAsInvoiced() {
-
+		ArgumentChecks.isTrue(WorkOrderStatus.FINISHED.equals(status) , "Finished to invoiced only");
+		this.status = WorkOrderStatus.INVOICED;
 	}
 
 	/**
@@ -70,7 +73,15 @@ public class WorkOrder {
 	 *  - The work order is not linked with a mechanic
 	 */
 	public void markAsFinished() {
-
+		this.status = WorkOrderStatus.FINISHED;
+		computeAmount();
+	}
+	
+	public void computeAmount(){
+		amount = 0L;
+		for (Intervention i : interventions) {
+			amount += i.getAmount();
+		}
 	}
 
 	/**
@@ -82,7 +93,8 @@ public class WorkOrder {
 	 *  - The work order is still linked with the invoice
 	 */
 	public void markBackToFinished() {
-
+		ArgumentChecks.isTrue(WorkOrderStatus.INVOICED.equals(status) , "Invoiced to finished only");
+		this.status = WorkOrderStatus.FINISHED;
 	}
 
 	/**
@@ -94,7 +106,9 @@ public class WorkOrder {
 	 *  - The work order is already linked with another mechanic
 	 */
 	public void assignTo(Mechanic mechanic) {
-
+		Associations.Assign.link(mechanic, this);
+		ArgumentChecks.isTrue(WorkOrderStatus.OPEN.equals(status) , "Open to assigned only");
+		this.status = WorkOrderStatus.ASSIGNED;
 	}
 
 	/**
@@ -105,7 +119,8 @@ public class WorkOrder {
 	 * 	- The work order is not in ASSIGNED status
 	 */
 	public void desassign() {
-
+		Associations.Assign.unlink(mechanic, this);
+		this.status = WorkOrderStatus.OPEN;
 	}
 
 	/**
@@ -116,7 +131,8 @@ public class WorkOrder {
 	 * 	- The work order is not in FINISHED status
 	 */
 	public void reopen() {
-
+		this.status = WorkOrderStatus.OPEN;
+		this.status = WorkOrderStatus.ASSIGNED;
 	}
 
 	public Set<Intervention> getInterventions() {
@@ -165,6 +181,14 @@ public class WorkOrder {
 
 	public Invoice getInvoice() {
 		return invoice;
+	}
+	
+	public boolean isInvoiced() {
+		return getInvoice() == null ? false : true;
+	}
+	
+	public boolean isFinished() {
+		return getStatus() != WorkOrderStatus.FINISHED ? false : true;
 	}
 
 	@Override

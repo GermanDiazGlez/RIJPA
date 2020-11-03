@@ -3,7 +3,6 @@ package uo.ri.cws.domain;
 import java.time.LocalDate;
 
 import alb.util.assertion.ArgumentChecks;
-import alb.util.assertion.StateChecks;
 
 public class CreditCard extends PaymentMean {
 	private String number;
@@ -15,6 +14,13 @@ public class CreditCard extends PaymentMean {
 		super();
 		ArgumentChecks.isNotEmpty(number);
 		this.number = number;
+	}
+
+
+	public CreditCard(String number, String type, LocalDate validThru) {
+		this.number = number;
+		this.type = type;
+		this.validThru = validThru;
 	}
 
 
@@ -30,6 +36,13 @@ public class CreditCard extends PaymentMean {
 
 	public LocalDate getValidThru() {
 		return validThru;
+	}
+
+
+	@Override
+	double getAvailable() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 	

@@ -3,16 +3,22 @@ package uo.ri.cws.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
 import alb.util.assertion.ArgumentChecks;
 
+@Entity
 public class VehicleType {
 	// natural attributes
 	private String name;
 	private double pricePerHour;
 
 	// accidental attributes
+	@OneToMany (mappedBy="type")
 	private Set<Vehicle> vehicles = new HashSet<>();
 
+	VehicleType() {}
 
 	public VehicleType(String name) {
 		super();

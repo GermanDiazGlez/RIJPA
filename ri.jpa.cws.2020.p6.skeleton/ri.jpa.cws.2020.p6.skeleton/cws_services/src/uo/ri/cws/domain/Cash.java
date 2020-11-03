@@ -9,4 +9,10 @@ public class Cash extends PaymentMean {
 		Associations.Pay.link(client, this);
 	}
 
+	@Override
+	double getAvailable() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

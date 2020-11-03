@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 
 import alb.util.assertion.ArgumentChecks;
 import uo.ri.cws.domain.base.BaseEntity;
@@ -20,7 +21,10 @@ public class Client extends BaseEntity{
 	private Address address;
 	
 	//Atributos accidentales
+	@OneToMany (mappedBy="client")
 	private Set<Vehicle> vehicles = new HashSet<>();
+	
+	@OneToMany (mappedBy="client")
 	private Set<PaymentMean> paymentMeans = new HashSet<>();
 	
 	public Client(String dni) {

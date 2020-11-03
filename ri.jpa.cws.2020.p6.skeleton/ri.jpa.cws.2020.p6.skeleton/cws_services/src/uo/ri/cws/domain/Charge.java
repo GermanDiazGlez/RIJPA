@@ -1,12 +1,24 @@
 package uo.ri.cws.domain;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+
+import alb.util.assertion.ArgumentChecks;
+import alb.util.assertion.StateChecks;
+import uo.ri.cws.domain.Invoice.InvoiceStatus;
+
+@Entity
 public class Charge {
 	// natural attributes
 	private double amount = 0.0;
 
 	// accidental attributes
+	@ManyToOne
 	private Invoice invoice;
+	@ManyToOne
 	private PaymentMean paymentMean;
+	
+	Charge() {}
 
 	public Charge(Invoice invoice, PaymentMean paymentMean, double amount) {
 		this.amount = amount;
@@ -15,6 +27,10 @@ public class Charge {
 		paymentMean.pay( amount );
 		// link invoice, this and paymentMean
 		Associations.Charges.link(paymentMean, this, invoice);
+		if(paymentMean.getAvailable() < amount) {
+			rewind();
+			StateChecks.isTrue(paymentMean.getAccumulated() > amount , "Invoice cant be paid");
+		}
 	}
 
 	/**
@@ -22,9 +38,12 @@ public class Charge {
 	 * @throws IllegalStateException if the invoice is already settled
 	 */
 	public void rewind() {
-		// asserts the invoice is not in PAID status
-		// decrements the payment mean accumulated ( paymentMean.pay( -amount) )
-		// unlinks invoice, this and paymentMean
+		// assert the invoice is not in PAID status
+		StateChecks.isTrue(InvoiceStatus.NOT_YET_PAID.equals(invoice.getStatus()) , "Invoice cant be paid");
+		// decrement the payment mean accumulated ( paymentMean.pay( -amount) )
+		paymentMean.pay(paymentMean.getAccumulated() - amount);
+		// unlink invoice, this and paymentMean
+		Associations.Charges.unlink(this);
 	}
 
 	public double getAmount() {

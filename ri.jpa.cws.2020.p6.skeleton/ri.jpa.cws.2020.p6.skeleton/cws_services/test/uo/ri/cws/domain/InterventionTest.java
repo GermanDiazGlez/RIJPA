@@ -71,6 +71,9 @@ public class InterventionTest {
 		final double TOTAL =
 					   50.0  // 60 mins * 50 €/hour for the vehicle type
 				+ 2 * 100.0; // 2 spare parts sold at 100.0 €
+		
+		System.out.println( i.getAmount());
+		System.out.println( TOTAL );
 
 		assertTrue( i.getAmount() == TOTAL );
 	}

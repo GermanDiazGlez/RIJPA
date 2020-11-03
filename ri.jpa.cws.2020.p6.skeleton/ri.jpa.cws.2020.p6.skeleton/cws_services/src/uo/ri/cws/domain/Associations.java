@@ -38,8 +38,10 @@ public class Associations {
 		}
 
 		public static void unlink(Client client, PaymentMean pm) {
+			System.out.println("Metodos de pago de un cliente antes: " + client._getPaymentMeans());
 			client._getPaymentMeans().remove(pm);
-			pm.setClient(null);
+			System.out.println("Metodos de pago de un cliente despues: " + client._getPaymentMeans());
+			pm._setClient(null);
 		}
 
 	}

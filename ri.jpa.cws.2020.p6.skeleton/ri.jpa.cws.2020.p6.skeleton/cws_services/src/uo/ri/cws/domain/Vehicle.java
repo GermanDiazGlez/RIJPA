@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import alb.util.assertion.ArgumentChecks;
 
@@ -12,15 +14,20 @@ import alb.util.assertion.ArgumentChecks;
 public class Vehicle {
 	@Column(unique = true)
 	private String plateNumber;
+	@Column (name="brand")
 	private String make;
 	private String model;
 	
 	//Atributos accidentales
+	@ManyToOne
 	private Client client;
+	@ManyToOne
 	private VehicleType vehicleType;
+	@OneToMany (mappedBy ="vehicle")
 	private Set<WorkOrder> workOrders = new HashSet<>();
 	
-
+	Vehicle() {}
+	
 	public Vehicle(String plateNumber) {
 		super();
 		ArgumentChecks.isNotEmpty(plateNumber);

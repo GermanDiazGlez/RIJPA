@@ -3,18 +3,28 @@ package uo.ri.cws.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
 import alb.util.assertion.ArgumentChecks;
 
+@Entity
 public class Mechanic {
 	// natural attributes
+	@Column (unique = true)
 	private String dni;
 	private String surname;
 	private String name;
 
 	// accidental attributes
+	@OneToMany (mappedBy = "mechanic")
 	private Set<WorkOrder> assigned = new HashSet<>();
+	
+	@OneToMany (mappedBy = "mechanic") 
 	private Set<Intervention> interventions = new HashSet<>();
 	
+	Mechanic() {}
 	
 	public Mechanic(String dni) {
 		super();

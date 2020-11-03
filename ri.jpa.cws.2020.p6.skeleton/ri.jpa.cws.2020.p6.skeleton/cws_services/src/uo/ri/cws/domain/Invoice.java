@@ -1,14 +1,28 @@
 package uo.ri.cws.domain;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
+import com.sun.jdi.connect.Connector.Argument;
+
+import alb.util.assertion.ArgumentChecks;
+import alb.util.date.Dates;
+import alb.util.math.Round;
+import uo.ri.cws.domain.WorkOrder.WorkOrderStatus;
+
+@Entity
 public class Invoice {
 	public enum InvoiceStatus { NOT_YET_PAID, PAID }
 
 	// natural attributes
+	@Column (unique = true)
 	private Long number;
 	private LocalDate date;
 	private double amount;
@@ -16,8 +30,12 @@ public class Invoice {
 	private InvoiceStatus status = InvoiceStatus.NOT_YET_PAID;
 
 	// accidental attributes
+	@OneToMany (mappedBy="invoice")
 	private Set<WorkOrder> workOrders = new HashSet<>();
+	@OneToMany (mappedBy="invoice")
 	private Set<Charge> charges = new HashSet<>();
+	
+	Invoice() {}
 
 	public Invoice(Long number) {
 		// call full constructor with sensible defaults
@@ -26,6 +44,10 @@ public class Invoice {
 
 	public Invoice(Long number, LocalDate date) {
 		// call full constructor with sensible defaults
+		ArgumentChecks.isNotNull(number);
+		ArgumentChecks.isNotNull(date);
+		this.number = number;
+		this.date = LocalDate.now();
 	}
 
 	public Invoice(Long number, List<WorkOrder> workOrders) {
@@ -38,13 +60,28 @@ public class Invoice {
 		// store the number
 		// store a copy of the date
 		// add every work order calling addWorkOrder( w )
+		ArgumentChecks.isNotNull(number);
+		ArgumentChecks.isNotNull(date);
+		ArgumentChecks.isNotNull(workOrders);
+		this.number = number;
+		this.date = LocalDate.now();
+		for (WorkOrder w : workOrders)
+			this.addWorkOrder(w);
 	}
 
 	/**
 	 * Computes amount and vat (vat depends on the date)
 	 */
 	private void computeAmount() {
-
+		LocalDate JULY_1_2012 = LocalDate.of(2012, 7, 1);
+		vat = date.isAfter(JULY_1_2012) ? 0.21 : 0.18;
+			
+		amount = 0L;
+		for (WorkOrder w : workOrders) {
+			amount += w.getAmount();
+		}
+		amount *= 1L + vat / 100L;
+		amount = Round.twoCents(amount);
 	}
 
 	/**
@@ -54,7 +91,15 @@ public class Invoice {
 	 * @throws IllegalStateException if the invoice status is not NOT_YET_PAID
 	 */
 	public void addWorkOrder(WorkOrder workOrder) {
-
+		if (!this.getStatus().equals(InvoiceStatus.NOT_YET_PAID)) {
+			throw new IllegalStateException("La factura esta sin abonar.");
+		}
+		if (!workOrder.getStatus().equals(WorkOrderStatus.FINISHED)) {
+			throw new IllegalStateException("La averia esta abierta.");
+		}
+		Associations.ToInvoice.link(this, workOrder);
+		workOrder.markAsInvoiced();
+		this.computeAmount();
 	}
 
 	/**
@@ -64,7 +109,12 @@ public class Invoice {
 	 * @throws IllegalStateException if the invoice status is not NOT_YET_PAID
 	 */
 	public void removeWorkOrder(WorkOrder workOrder) {
-
+		if (!this.getStatus().equals(InvoiceStatus.NOT_YET_PAID)) {
+			throw new IllegalStateException("La factura no puede estar sin abonar.");
+		}
+		Associations.ToInvoice.unlink(this, workOrder);
+		workOrder.markBackToFinished();
+		this.computeAmount();
 	}
 
 	/**

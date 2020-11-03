@@ -52,6 +52,7 @@ public class ChargeTests {
 
 		new Charge(f, b, 100.0);
 
+		System.out.println("Acumulated: " + b.getAccumulated());
 		assertTrue(b.getAccumulated() == 100.0);
 		assertTrue(b.getAvailable() == 50.0);
 	}
