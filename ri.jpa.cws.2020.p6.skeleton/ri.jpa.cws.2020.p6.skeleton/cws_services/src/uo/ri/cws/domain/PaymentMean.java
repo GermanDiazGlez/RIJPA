@@ -22,9 +22,7 @@ public abstract class PaymentMean {
 	PaymentMean(){}
 
 	public void pay(double importe) {
-		System.out.println("Importe" + importe);
 		this.setAccumulated(this.getAccumulated() + importe);
-		System.out.println("Acumulated despues" + accumulated);
 	}
 
 	void setAccumulated(double accumulated) {

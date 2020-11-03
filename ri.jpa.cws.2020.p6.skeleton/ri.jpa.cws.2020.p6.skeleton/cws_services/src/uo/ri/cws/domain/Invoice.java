@@ -13,27 +13,26 @@ import javax.persistence.OneToMany;
 import com.sun.jdi.connect.Connector.Argument;
 
 import alb.util.assertion.ArgumentChecks;
+import alb.util.assertion.StateChecks;
 import alb.util.date.Dates;
 import alb.util.math.Round;
 import uo.ri.cws.domain.WorkOrder.WorkOrderStatus;
+import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
-public class Invoice {
+public class Invoice extends BaseEntity{
 	public enum InvoiceStatus { NOT_YET_PAID, PAID }
 
 	// natural attributes
-	@Column (unique = true)
-	private Long number;
+	@Column (unique = true)	private Long number;
 	private LocalDate date;
 	private double amount;
 	private double vat;
 	private InvoiceStatus status = InvoiceStatus.NOT_YET_PAID;
 
 	// accidental attributes
-	@OneToMany (mappedBy="invoice")
-	private Set<WorkOrder> workOrders = new HashSet<>();
-	@OneToMany (mappedBy="invoice")
-	private Set<Charge> charges = new HashSet<>();
+	@OneToMany (mappedBy="invoice")	private Set<WorkOrder> workOrders = new HashSet<>();
+	@OneToMany (mappedBy="invoice")	private Set<Charge> charges = new HashSet<>();
 	
 	Invoice() {}
 
@@ -64,7 +63,7 @@ public class Invoice {
 		ArgumentChecks.isNotNull(date);
 		ArgumentChecks.isNotNull(workOrders);
 		this.number = number;
-		this.date = LocalDate.now();
+		this.date = date;
 		for (WorkOrder w : workOrders)
 			this.addWorkOrder(w);
 	}
@@ -80,7 +79,8 @@ public class Invoice {
 		for (WorkOrder w : workOrders) {
 			amount += w.getAmount();
 		}
-		amount *= 1L + vat / 100L;
+		double iva = amount * vat;
+		amount += iva;
 		amount = Round.twoCents(amount);
 	}
 
@@ -125,7 +125,8 @@ public class Invoice {
 	 *  	the total of the invoice
 	 */
 	public void settle() {
-
+		StateChecks.isTrue(!this.getStatus().equals(InvoiceStatus.PAID), "The invoice has already been paid");
+		status = InvoiceStatus.PAID;
 	}
 
 	public Set<WorkOrder> getWorkOrders() {
@@ -193,6 +194,10 @@ public class Invoice {
 	public String toString() {
 		return "Invoice [number=" + number + ", date=" + date + ", amount=" + amount + ", vat=" + vat + ", status="
 				+ status + "]";
+	}
+
+	public boolean isNotSettled() {
+		return this.getStatus().equals(InvoiceStatus.PAID) ? false : true;
 	}
 	
 

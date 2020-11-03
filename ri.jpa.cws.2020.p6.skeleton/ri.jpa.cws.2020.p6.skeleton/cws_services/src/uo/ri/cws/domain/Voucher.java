@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import alb.util.assertion.StateChecks;
+
 @Entity
 public class Voucher extends PaymentMean {
 	@Column (unique=true)
@@ -38,7 +40,9 @@ public class Voucher extends PaymentMean {
 	 */
 	@Override
 	public void pay(double amount) {
-
+		StateChecks.isTrue(available>=amount, "No tienes suficiente dinero");
+		super.pay(amount);
+		available -= amount;
 	}
 	
 	public String getCode() {
@@ -47,11 +51,7 @@ public class Voucher extends PaymentMean {
 
 	public void setCode(String code) {
 		this.code = code;
-	}
-
-	public double getAvailable() {
-		return available;
-	}
+	}	
 
 	public void setAvailable(double available) {
 		this.available = available;
@@ -83,6 +83,11 @@ public class Voucher extends PaymentMean {
 	@Override
 	Set<Charge> _getCharges() {
 		return charges;
+	}
+
+	@Override
+	double getAvailable() {
+		return available;
 	}
 
 }

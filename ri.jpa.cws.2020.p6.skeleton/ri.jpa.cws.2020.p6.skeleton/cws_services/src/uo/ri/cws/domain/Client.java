@@ -12,8 +12,7 @@ import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
 public class Client extends BaseEntity{
-	@Column(unique = true)
-	private String dni;
+	@Column(unique = true) private String dni;
 	private String name;
 	private String surname;
 	private String email;
@@ -21,19 +20,17 @@ public class Client extends BaseEntity{
 	private Address address;
 	
 	//Atributos accidentales
-	@OneToMany (mappedBy="client")
-	private Set<Vehicle> vehicles = new HashSet<>();
+	@OneToMany (mappedBy="client") private Set<Vehicle> vehicles = new HashSet<>();
 	
-	@OneToMany (mappedBy="client")
-	private Set<PaymentMean> paymentMeans = new HashSet<>();
+	@OneToMany (mappedBy="client") private Set<PaymentMean> paymentMeans = new HashSet<>();
+	
+	Client(){}
 	
 	public Client(String dni) {
 		super();
 		ArgumentChecks.isNotEmpty(dni);
 		this.dni = dni;
 	}
-	
-	Client(){}
 	
 	public Client(String dni, String name, String surname) {
 		this(dni);

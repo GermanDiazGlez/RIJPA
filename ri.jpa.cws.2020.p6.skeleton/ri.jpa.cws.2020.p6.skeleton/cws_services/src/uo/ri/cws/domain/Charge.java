@@ -27,10 +27,7 @@ public class Charge {
 		paymentMean.pay( amount );
 		// link invoice, this and paymentMean
 		Associations.Charges.link(paymentMean, this, invoice);
-		if(paymentMean.getAvailable() < amount) {
-			rewind();
-			StateChecks.isTrue(paymentMean.getAccumulated() > amount , "Invoice cant be paid");
-		}
+		
 	}
 
 	/**
@@ -41,7 +38,7 @@ public class Charge {
 		// assert the invoice is not in PAID status
 		StateChecks.isTrue(InvoiceStatus.NOT_YET_PAID.equals(invoice.getStatus()) , "Invoice cant be paid");
 		// decrement the payment mean accumulated ( paymentMean.pay( -amount) )
-		paymentMean.pay(paymentMean.getAccumulated() - amount);
+		paymentMean.pay(-amount);
 		// unlink invoice, this and paymentMean
 		Associations.Charges.unlink(this);
 	}

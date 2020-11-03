@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import alb.util.assertion.ArgumentChecks;
-import sun.awt.windows.WPrinterJob;
 
 public class Vehicle {
 	private String plateNumber;

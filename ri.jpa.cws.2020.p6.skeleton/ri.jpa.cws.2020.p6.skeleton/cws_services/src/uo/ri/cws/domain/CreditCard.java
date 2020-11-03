@@ -3,6 +3,7 @@ package uo.ri.cws.domain;
 import java.time.LocalDate;
 
 import alb.util.assertion.ArgumentChecks;
+import alb.util.assertion.StateChecks;
 
 public class CreditCard extends PaymentMean {
 	private String number;
@@ -21,6 +22,13 @@ public class CreditCard extends PaymentMean {
 		this.number = number;
 		this.type = type;
 		this.validThru = validThru;
+	}
+	
+	@Override
+	public void pay(double amount) {
+		LocalDate ahora = LocalDate.now();
+		StateChecks.isTrue(ahora.isBefore(validThru), "No tienes suficiente dinero");
+		super.pay(amount);
 	}
 
 

@@ -80,7 +80,8 @@ public class Intervention {
 		for (Substitution substitution : substitutions) {
 			amount += substitution.getTotalPrice();
 		}
-		amount += minutes / 60 * 50;
+		double minTime = Double.valueOf(minutes)/60;
+		amount += minTime * workOrder.getVehicle().getVehicleType().getPricePerHour();
 	}
 
 

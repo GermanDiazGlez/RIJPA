@@ -9,9 +9,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import alb.util.assertion.ArgumentChecks;
+import alb.util.assertion.StateChecks;
+import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
-public class WorkOrder {
+public class WorkOrder extends BaseEntity{
 	public enum WorkOrderStatus {
 		OPEN,
 		ASSIGNED,
@@ -27,14 +29,12 @@ public class WorkOrder {
 	private WorkOrderStatus status = WorkOrderStatus.OPEN;
 
 	// accidental attributes
-	@ManyToOne
-	private Vehicle vehicle;
-	@ManyToOne
-	private Mechanic mechanic;
-	@ManyToOne
-	private Invoice invoice;
-	@OneToMany (mappedBy="workOrder")
-	private Set<Intervention> interventions = new HashSet<>();
+	@ManyToOne private Vehicle vehicle;
+	@ManyToOne private Mechanic mechanic;
+	@ManyToOne private Invoice invoice;
+	@OneToMany (mappedBy="workOrder") private Set<Intervention> interventions = new HashSet<>();
+	
+	WorkOrder() {}
 
 	public WorkOrder(Vehicle vehicle) { //Si paso el atributo de otra clase en el constructor, tengo que hacer el vinculo
 		super();
@@ -59,7 +59,8 @@ public class WorkOrder {
 	 *  - The work order is not linked with the invoice
 	 */
 	public void markAsInvoiced() {
-		ArgumentChecks.isTrue(WorkOrderStatus.FINISHED.equals(status) , "Finished to invoiced only");
+		StateChecks.isTrue(WorkOrderStatus.FINISHED.equals(status) , "Finished to invoiced only");
+		StateChecks.isTrue(this.getInvoice()!=null, "This workOrder doesnt have an invoice");
 		this.status = WorkOrderStatus.INVOICED;
 	}
 
@@ -73,6 +74,7 @@ public class WorkOrder {
 	 *  - The work order is not linked with a mechanic
 	 */
 	public void markAsFinished() {
+		StateChecks.isTrue(WorkOrderStatus.ASSIGNED.equals(status) , "WorkOrder is not assigned");
 		this.status = WorkOrderStatus.FINISHED;
 		computeAmount();
 	}
@@ -93,7 +95,7 @@ public class WorkOrder {
 	 *  - The work order is still linked with the invoice
 	 */
 	public void markBackToFinished() {
-		ArgumentChecks.isTrue(WorkOrderStatus.INVOICED.equals(status) , "Invoiced to finished only");
+		StateChecks.isTrue(WorkOrderStatus.INVOICED.equals(status) , "Invoiced to finished only");
 		this.status = WorkOrderStatus.FINISHED;
 	}
 
@@ -106,8 +108,9 @@ public class WorkOrder {
 	 *  - The work order is already linked with another mechanic
 	 */
 	public void assignTo(Mechanic mechanic) {
+		StateChecks.isTrue(WorkOrderStatus.OPEN.equals(status) , "Open to assigned only");
+		StateChecks.isTrue(this.getMechanic()==null , "This workOrder has a mechanic");
 		Associations.Assign.link(mechanic, this);
-		ArgumentChecks.isTrue(WorkOrderStatus.OPEN.equals(status) , "Open to assigned only");
 		this.status = WorkOrderStatus.ASSIGNED;
 	}
 
@@ -119,6 +122,7 @@ public class WorkOrder {
 	 * 	- The work order is not in ASSIGNED status
 	 */
 	public void desassign() {
+		StateChecks.isTrue(WorkOrderStatus.ASSIGNED.equals(status), "This WorkOrder is not assigned");
 		Associations.Assign.unlink(mechanic, this);
 		this.status = WorkOrderStatus.OPEN;
 	}
@@ -131,8 +135,9 @@ public class WorkOrder {
 	 * 	- The work order is not in FINISHED status
 	 */
 	public void reopen() {
+		ArgumentChecks.isTrue(WorkOrderStatus.FINISHED.equals(status) , "This workOrder is not Finished");
 		this.status = WorkOrderStatus.OPEN;
-		this.status = WorkOrderStatus.ASSIGNED;
+		Associations.Assign.unlink(mechanic, this);
 	}
 
 	public Set<Intervention> getInterventions() {

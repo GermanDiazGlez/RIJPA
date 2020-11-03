@@ -23,7 +23,7 @@ public class Substitution {
 		super();
 		ArgumentChecks.isNotNull(sparePart);
 		ArgumentChecks.isNotNull(intervention);
-
+		ArgumentChecks.isTrue(quantity>0);
 		Associations.Sustitute.link(sparePart, this, intervention);
 		this.quantity = quantity;
 	}
@@ -86,6 +86,11 @@ public class Substitution {
 	}
 	
 	public double getTotalPrice(){
+		totalPrice = sparePart.getPrice() * quantity;
+		return totalPrice;
+	}
+
+	public double getAmount() {
 		totalPrice = sparePart.getPrice() * quantity;
 		return totalPrice;
 	}

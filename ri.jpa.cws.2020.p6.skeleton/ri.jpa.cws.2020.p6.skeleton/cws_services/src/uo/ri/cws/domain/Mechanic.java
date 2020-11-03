@@ -8,21 +8,19 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
 import alb.util.assertion.ArgumentChecks;
+import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
-public class Mechanic {
+public class Mechanic extends BaseEntity{
 	// natural attributes
-	@Column (unique = true)
-	private String dni;
+	@Column (unique = true) private String dni;
 	private String surname;
 	private String name;
 
 	// accidental attributes
-	@OneToMany (mappedBy = "mechanic")
-	private Set<WorkOrder> assigned = new HashSet<>();
+	@OneToMany (mappedBy = "mechanic") private Set<WorkOrder> assigned = new HashSet<>();
 	
-	@OneToMany (mappedBy = "mechanic") 
-	private Set<Intervention> interventions = new HashSet<>();
+	@OneToMany (mappedBy = "mechanic") private Set<Intervention> interventions = new HashSet<>();
 	
 	Mechanic() {}
 	

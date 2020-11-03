@@ -3,20 +3,21 @@ package uo.ri.cws.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
 import alb.util.assertion.ArgumentChecks;
+import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
-public class VehicleType {
+public class VehicleType extends BaseEntity{
 	// natural attributes
-	private String name;
+	@Column(unique=true) private String name;
 	private double pricePerHour;
 
 	// accidental attributes
-	@OneToMany (mappedBy="type")
-	private Set<Vehicle> vehicles = new HashSet<>();
+	@OneToMany (mappedBy="type") private Set<Vehicle> vehicles = new HashSet<>();
 
 	VehicleType() {}
 

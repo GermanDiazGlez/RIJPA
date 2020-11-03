@@ -7,17 +7,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+import uo.ri.cws.domain.base.BaseEntity;
+
 @Entity
-public class SparePart {
+public class SparePart extends BaseEntity{
 	// natural attributes
-	@Column (unique = true)
-	private String code;
+	@Column (unique = true) private String code;
 	private String description;
 	private double price;
 
 	// accidental attributes
-	@OneToMany (mappedBy="sparePart")
-	private Set<Substitution> substitutions = new HashSet<>();
+	@OneToMany (mappedBy="sparePart") private Set<Substitution> substitutions = new HashSet<>();
 
 	SparePart() {}
 	

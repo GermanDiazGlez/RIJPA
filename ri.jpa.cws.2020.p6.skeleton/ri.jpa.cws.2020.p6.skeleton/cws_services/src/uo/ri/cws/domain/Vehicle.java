@@ -9,22 +9,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import alb.util.assertion.ArgumentChecks;
+import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity	
-public class Vehicle {
-	@Column(unique = true)
-	private String plateNumber;
-	@Column (name="brand")
-	private String make;
+public class Vehicle extends BaseEntity{
+	@Column(unique = true) private String plateNumber;
+	@Column (name="brand") private String make;
 	private String model;
 	
 	//Atributos accidentales
-	@ManyToOne
-	private Client client;
-	@ManyToOne
-	private VehicleType vehicleType;
-	@OneToMany (mappedBy ="vehicle")
-	private Set<WorkOrder> workOrders = new HashSet<>();
+	@ManyToOne private Client client;
+	@ManyToOne private VehicleType vehicleType;
+	@OneToMany (mappedBy ="vehicle") private Set<WorkOrder> workOrders = new HashSet<>();
 	
 	Vehicle() {}
 	

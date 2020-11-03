@@ -100,7 +100,6 @@ public class InvoiceTests {
 		List<WorkOrder> workOrders = new ArrayList<>();
 		workOrders.add( workOrder );
 		Invoice invoice = new Invoice( 0L, workOrders );
-
 		assertTrue( invoice.isNotSettled() );
 	}
 
@@ -115,7 +114,6 @@ public class InvoiceTests {
 		List<WorkOrder> workOrders = new ArrayList<>();
 		workOrders.add( workOrder );
 		Invoice invoice = new Invoice( 0L, JUNE_6_2012, workOrders ); // vat 18%
-
 		assertTrue( invoice.getAmount() ==  295.0 );
 	}
 
