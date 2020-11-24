@@ -1,8 +1,7 @@
 package uo.ri.cws.application.service.mechanic;
 
+import java.util.List;
 import java.util.Optional;
-
-import org.eclipse.persistence.internal.oxm.schema.model.List;
 
 import uo.ri.cws.application.service.BusinessException;
 

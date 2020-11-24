@@ -1,36 +1,32 @@
 package uo.ri.cws.domain;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
+import alb.util.assertion.ArgumentChecks;
 import alb.util.assertion.StateChecks;
 
 @Entity
+@Table(name = "TVOUCHERS")
 public class Voucher extends PaymentMean {
-	@Column (unique=true)
-	private String code;
+	@Column(unique = true)private String code;
 	private double available = 0.0;
 	private String description;
-
-	@ManyToOne private Client client;
-
-	@OneToMany(mappedBy="paymentMean") Set<Charge> charges = new HashSet<>();
 	
 	Voucher() {}
 	
-	public Voucher(String code) {
+	public Voucher(String code, String description) {
 		super();
+		ArgumentChecks.isNotEmpty(code);
+		ArgumentChecks.isNotEmpty(description);
 		this.code = code;
-	}
+		this.description = description;
+	    }
 
 	public Voucher(String code, String description, double available) {
-		this(code);
-		this.description = description;
+		this(code, description);
+		ArgumentChecks.isNotNull(available);
 		this.available = available;
 	}
 
@@ -64,29 +60,8 @@ public class Voucher extends PaymentMean {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	@Override
-	public Client getClient() {
-		return client;
-	}
 
-	@Override
-	void _setClient(Client client) {
-		this.client = client;
-	}
-
-	@Override
-	public Set<Charge> getCharges() {
-		return new HashSet<> ( charges );
-	}
-
-	@Override
-	Set<Charge> _getCharges() {
-		return charges;
-	}
-
-	@Override
-	double getAvailable() {
+	public double getAvailable() {
 		return available;
 	}
 

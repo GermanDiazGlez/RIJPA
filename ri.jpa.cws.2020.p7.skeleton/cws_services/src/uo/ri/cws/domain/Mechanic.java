@@ -1,4 +1,4 @@
-package uo.ri.cws.domain;
+ package uo.ri.cws.domain;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -6,11 +6,13 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import alb.util.assertion.ArgumentChecks;
 import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
+@Table(name = "TMECHANICS")
 public class Mechanic extends BaseEntity{
 	// natural attributes
 	@Column (unique = true) private String dni;
@@ -26,7 +28,10 @@ public class Mechanic extends BaseEntity{
 	
 	public Mechanic(String dni) {
 		super();
+		ArgumentChecks.isNotEmpty(dni);
 		this.dni = dni;
+		this.surname = "surname";
+		this.name = "name";
 	}
 
 	public Mechanic(String dni, String surname, String name) {
@@ -36,7 +41,6 @@ public class Mechanic extends BaseEntity{
 		this.surname = surname;
 		this.name = name;
 	}
-
 
 
 	public Set<WorkOrder> getAssigned() {
@@ -55,54 +59,25 @@ public class Mechanic extends BaseEntity{
 		return interventions;
 	}
 
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((dni == null) ? 0 : dni.hashCode());
-		return result;
-	}
-
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Mechanic other = (Mechanic) obj;
-		if (dni == null) {
-			if (other.dni != null)
-				return false;
-		} else if (!dni.equals(other.dni))
-			return false;
-		return true;
-	}
-
-
-
 	public String getDni() {
 		return dni;
 	}
 
-
+	public void setSurname(String surname) {
+		this.surname = surname;
+	}
 
 	public String getSurname() {
 		return surname;
 	}
 
-
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getName() {
 		return name;
 	}
-
-
 
 	@Override
 	public String toString() {

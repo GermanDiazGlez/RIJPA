@@ -1,17 +1,26 @@
 package uo.ri.cws.domain;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import alb.util.assertion.ArgumentChecks;
+import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
-public class Intervention {
+@Table(name = "TINTERVENTIONS",uniqueConstraints = {
+		@UniqueConstraint(columnNames = {
+				"WORKORDER_ID","MECHANIC_ID","DATE"
+		})
+})
+public class Intervention extends BaseEntity{
 	// natural attributes
 	private LocalDateTime date;
 	private int minutes;
@@ -21,21 +30,30 @@ public class Intervention {
 	private WorkOrder workOrder;
 	@ManyToOne
 	private Mechanic mechanic;
-	
-	private double amount;
 
 	@OneToMany (mappedBy="intervention")
 	private Set<Substitution> substitutions = new HashSet<>();
 	
 	Intervention() {}
 	
-	public Intervention(Mechanic mechanic, WorkOrder workOrder, int minutes) {
+	public Intervention(WorkOrder workOrder, Mechanic mechanic) {
 		super();
-		this.date = LocalDateTime.now();
-		ArgumentChecks.isNotNull(workOrder);
 		ArgumentChecks.isNotNull(mechanic);
+		ArgumentChecks.isNotNull(workOrder);
+		this.date = LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS);
 		Associations.Intervene.link(workOrder, this, mechanic);
+	}
+
+	public Intervention(Mechanic mechanic, WorkOrder workOrder, int minutes) {
+		this(workOrder, mechanic);
+		ArgumentChecks.isNotNull(minutes);
 		this.minutes = minutes;
+	}
+
+	public Intervention(Mechanic mechanic, WorkOrder workOrder, LocalDateTime date, int minutes) {
+		this(mechanic,workOrder,minutes);
+		ArgumentChecks.isNotNull(date);
+		this.date = date;
 	}
 	
 
@@ -72,59 +90,14 @@ public class Intervention {
 	}
 	
 	public double getAmount() {
-		totalAmount();
-		return amount;
-	}
-	
-	public void totalAmount() {
+		double amount = 0.0;
 		for (Substitution substitution : substitutions) {
-			amount += substitution.getTotalPrice();
+			amount += substitution.getAmount();
 		}
 		double minTime = Double.valueOf(minutes)/60;
 		amount += minTime * workOrder.getVehicle().getVehicleType().getPricePerHour();
+		return amount;
 	}
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((date == null) ? 0 : date.hashCode());
-		result = prime * result + ((mechanic == null) ? 0 : mechanic.hashCode());
-		result = prime * result + ((workOrder == null) ? 0 : workOrder.hashCode());
-		return result;
-	}
-
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Intervention other = (Intervention) obj;
-		if (date == null) {
-			if (other.date != null)
-				return false;
-		} else if (!date.equals(other.date))
-			return false;
-		if (mechanic == null) {
-			if (other.mechanic != null)
-				return false;
-		} else if (!mechanic.equals(other.mechanic))
-			return false;
-		if (workOrder == null) {
-			if (other.workOrder != null)
-				return false;
-		} else if (!workOrder.equals(other.workOrder))
-			return false;
-		return true;
-	}
-
-
 
 	@Override
 	public String toString() {

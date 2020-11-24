@@ -5,14 +5,23 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import alb.util.assertion.ArgumentChecks;
 import alb.util.assertion.StateChecks;
 import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
+@Table(name = "TWORKORDERS", uniqueConstraints = {
+		@UniqueConstraint(columnNames = {
+				"VEHICLE_ID","DATE"
+		})
+})
 public class WorkOrder extends BaseEntity{
 	public enum WorkOrderStatus {
 		OPEN,
@@ -26,6 +35,7 @@ public class WorkOrder extends BaseEntity{
 	private LocalDateTime date;
 	private String description;
 	private double amount = 0.0;
+	@Enumerated(EnumType.STRING)
 	private WorkOrderStatus status = WorkOrderStatus.OPEN;
 
 	// accidental attributes
@@ -40,13 +50,20 @@ public class WorkOrder extends BaseEntity{
 		super();
 		this.date = LocalDateTime.now();
 		ArgumentChecks.isNotNull(vehicle);
-
 		Associations.Fix.link(vehicle, this);
 	}
-
+	
 	public WorkOrder(Vehicle vehicle, String description) {
 		this(vehicle);
 		ArgumentChecks.isNotEmpty(description);
+		this.description = description;
+	}
+
+	public WorkOrder(Vehicle vehicle, LocalDateTime date, String description) {
+		this(vehicle);
+		ArgumentChecks.isNotEmpty(description);
+		ArgumentChecks.isNotNull(date);
+		this.date = date;
 		this.description = description;
 	}
 
@@ -75,6 +92,7 @@ public class WorkOrder extends BaseEntity{
 	 */
 	public void markAsFinished() {
 		StateChecks.isTrue(WorkOrderStatus.ASSIGNED.equals(status) , "WorkOrder is not assigned");
+		Associations.Assign.link(mechanic, this);
 		this.status = WorkOrderStatus.FINISHED;
 		computeAmount();
 	}
@@ -194,37 +212,6 @@ public class WorkOrder extends BaseEntity{
 	
 	public boolean isFinished() {
 		return getStatus() != WorkOrderStatus.FINISHED ? false : true;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((date == null) ? 0 : date.hashCode());
-		result = prime * result + ((vehicle == null) ? 0 : vehicle.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		WorkOrder other = (WorkOrder) obj;
-		if (date == null) {
-			if (other.date != null)
-				return false;
-		} else if (!date.equals(other.date))
-			return false;
-		if (vehicle == null) {
-			if (other.vehicle != null)
-				return false;
-		} else if (!vehicle.equals(other.vehicle))
-			return false;
-		return true;
 	}
 
 	@Override

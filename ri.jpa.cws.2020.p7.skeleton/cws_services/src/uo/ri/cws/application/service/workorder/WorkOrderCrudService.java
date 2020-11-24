@@ -8,8 +8,7 @@ import java.time.LocalDateTime;
  */
 public interface WorkOrderCrudService {
 
-	// ...
-
+    
 	public static class WorkOrderDto {
 
 		public String id;

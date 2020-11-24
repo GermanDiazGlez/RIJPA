@@ -3,6 +3,7 @@ package uo.ri.cws.application.service.mechanic.crud;
 import java.util.List;
 import java.util.Optional;
 
+import uo.ri.conf.Factory;
 import uo.ri.cws.application.service.BusinessException;
 import uo.ri.cws.application.service.mechanic.MechanicCrudService;
 import uo.ri.cws.application.service.mechanic.crud.command.AddMechanic;
@@ -10,6 +11,7 @@ import uo.ri.cws.application.service.mechanic.crud.command.DeleteMechanic;
 import uo.ri.cws.application.service.mechanic.crud.command.FindAllMechanics;
 import uo.ri.cws.application.service.mechanic.crud.command.FindMechanicById;
 import uo.ri.cws.application.service.mechanic.crud.command.UpdateMechanic;
+import uo.ri.cws.application.util.command.CommandExecutor;
 
 public class MechanicCrudServiceImpl implements MechanicCrudService {
 	
@@ -17,7 +19,7 @@ public class MechanicCrudServiceImpl implements MechanicCrudService {
 
 	@Override
 	public MechanicDto addMechanic(MechanicDto dto) throws BusinessException {
-		return executor.execute(new AddMechanic( dto ).execute());
+		return executor.execute(new AddMechanic( dto ));
 	}
 
 	@Override

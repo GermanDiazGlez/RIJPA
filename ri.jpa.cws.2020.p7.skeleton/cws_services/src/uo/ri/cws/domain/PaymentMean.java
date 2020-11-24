@@ -4,81 +4,53 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
-public abstract class PaymentMean {
+@Table(name = "TPAYMENTMEANS")
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class PaymentMean extends BaseEntity {
 	// natural attributes
 	private double accumulated = 0.0;
 
 	// accidental attributes
 	@ManyToOne
 	private Client client;
-	
-	@OneToMany (mappedBy="paymentMean") 
+	@OneToMany(mappedBy = "paymentMean")
 	private Set<Charge> charges = new HashSet<>();
 
-	PaymentMean(){}
-
-	public void pay(double importe) {
-		this.setAccumulated(this.getAccumulated() + importe);
+	public double getAccumulated() {
+		return accumulated;
 	}
 
-	void setAccumulated(double accumulated) {
-		this.accumulated = accumulated;
+	public Client getClient() {
+		return client;
+	}
+
+	public void pay(double importe) {
+		this.accumulated += importe;
 	}
 
 	void _setClient(Client client) {
 		this.client = client;
 	}
 
+	void setClient(Client client) {
+		this.client = client;
+	}
+
 	public Set<Charge> getCharges() {
-		return new HashSet<>( charges );
+		return new HashSet<>(charges);
 	}
 
 	Set<Charge> _getCharges() {
 		return charges;
-	}
-
-	public double getAccumulated() {
-		return accumulated;
-	}
-	
-	public Client getClient() {
-		return client;
-	}
-	
-	abstract double getAvailable();
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(accumulated);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((client == null) ? 0 : client.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PaymentMean other = (PaymentMean) obj;
-		if (Double.doubleToLongBits(accumulated) != Double.doubleToLongBits(other.accumulated))
-			return false;
-		if (client == null) {
-			if (other.client != null)
-				return false;
-		} else if (!client.equals(other.client))
-			return false;
-		return true;
 	}
 
 	@Override
@@ -86,7 +58,4 @@ public abstract class PaymentMean {
 		return "PaymentMean [accumulated=" + accumulated + ", client=" + client + "]";
 	}
 
-	
-
-	
 }

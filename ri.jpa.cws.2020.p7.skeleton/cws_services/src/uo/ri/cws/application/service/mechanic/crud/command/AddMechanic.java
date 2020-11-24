@@ -1,16 +1,16 @@
 package uo.ri.cws.application.service.mechanic.crud.command;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import java.util.Optional;
 
-import org.eclipse.persistence.jpa.config.Entity;
-
+import uo.ri.conf.Factory;
+import uo.ri.cws.application.repository.MechanicRepository;
 import uo.ri.cws.application.service.BusinessException;
 import uo.ri.cws.application.service.mechanic.MechanicCrudService.MechanicDto;
+import uo.ri.cws.application.util.BusinessChecks;
+import uo.ri.cws.application.util.command.Command;
+import uo.ri.cws.domain.Mechanic;
 
-public class AddMechanic implements Command<MechanicDto>{
+public class AddMechanic implements Command<MechanicDto> {
 
 	private MechanicDto dto;
 
@@ -19,14 +19,13 @@ public class AddMechanic implements Command<MechanicDto>{
 	}
 
 	public MechanicDto execute() throws BusinessException {
-
-		Optional<Mechanic> om = em.createNamedQuery("Mechanic.findByDni", Mechanic.class)
-							.setParameter(1, dto.dni)
-							.getResultList()
-							.getResultStream()
-							.findFirst();
+		
+		validateMechanic();
+		MechanicRepository repo = Factory.repository.forMechanic();
+		
+		Optional<Mechanic> om = repo.findByDni(dto.dni);
 	
-		BusinessCheck.isTrue(om.isEmpty(),"Mechanic already exists");
+		BusinessChecks.isTrue(om.isEmpty(),"Mechanic already exists");
 		
 		Mechanic m = new Mechanic(dto.dni, dto.name, dto.surname);
 		
@@ -35,6 +34,11 @@ public class AddMechanic implements Command<MechanicDto>{
 		repo.add(m);
 		
 		return dto;
+	}
+	
+	
+	public void validateMechanic() throws BusinessException {
+		BusinessChecks.isTrue(dto.dni!=null, "Mechanic cant be null");
 	}
 
 }

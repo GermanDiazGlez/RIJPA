@@ -1,7 +1,8 @@
 package uo.ri.cws.infrastructure.persistence.jpa.repository;
 
-import java.util.List;
 import java.util.Optional;
+
+import javax.persistence.EntityManager;
 
 import uo.ri.cws.application.repository.MechanicRepository;
 import uo.ri.cws.domain.Mechanic;
@@ -12,7 +13,11 @@ public class MechanicJpaRepository extends BaseJpaRepository<Mechanic> implement
 
 	@Override
 	public Optional<Mechanic> findByDni(String dni) {
-		return 
+		EntityManager em = Jpa.getManager();
+		return em.createNamedQuery("Mechanic.findByDni", Mechanic.class)
+			.setParameter(1, dni)
+			.getResultStream()
+			.findFirst();
 	}
 
 }

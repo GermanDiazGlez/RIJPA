@@ -11,5 +11,9 @@ public interface RepositoryFactory {
 	InterventionRepository forIntervention();
 	VehicleRepository forVehicle();
 	VehicleTypeRepository forVehicleType();
+	OrderRepository forOrder();
+	SupplyRepository forSupply();
+	ProviderRepository forProvider();
+	ChargeRepository forCharge();
 
 }

@@ -7,11 +7,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import alb.util.assertion.ArgumentChecks;
 import uo.ri.cws.domain.base.BaseEntity;
 
-@Entity	
+@Entity
+@Table(name = "TVEHICLES")
 public class Vehicle extends BaseEntity{
 	@Column(unique = true) private String plateNumber;
 	@Column (name="brand") private String make;
@@ -53,34 +55,6 @@ public class Vehicle extends BaseEntity{
 	public String getModel() {
 		return model;
 	}
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((plateNumber == null) ? 0 : plateNumber.hashCode());
-		return result;
-	}
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Vehicle other = (Vehicle) obj;
-		if (plateNumber == null) {
-			if (other.plateNumber != null)
-				return false;
-		} else if (!plateNumber.equals(other.plateNumber))
-			return false;
-		return true;
-	}
-
 
 	@Override
 	public String toString() {

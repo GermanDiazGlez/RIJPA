@@ -1,25 +1,25 @@
 package uo.ri.cws.domain;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
-
-import com.sun.jdi.connect.Connector.Argument;
+import javax.persistence.Table;
 
 import alb.util.assertion.ArgumentChecks;
 import alb.util.assertion.StateChecks;
-import alb.util.date.Dates;
 import alb.util.math.Round;
 import uo.ri.cws.domain.WorkOrder.WorkOrderStatus;
 import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
+@Table(name = "TINVOICES")
 public class Invoice extends BaseEntity{
 	public enum InvoiceStatus { NOT_YET_PAID, PAID }
 
@@ -28,6 +28,7 @@ public class Invoice extends BaseEntity{
 	private LocalDate date;
 	private double amount;
 	private double vat;
+	@Enumerated(EnumType.STRING)
 	private InvoiceStatus status = InvoiceStatus.NOT_YET_PAID;
 
 	// accidental attributes
@@ -43,10 +44,7 @@ public class Invoice extends BaseEntity{
 
 	public Invoice(Long number, LocalDate date) {
 		// call full constructor with sensible defaults
-		ArgumentChecks.isNotNull(number);
-		ArgumentChecks.isNotNull(date);
-		this.number = number;
-		this.date = LocalDate.now();
+		this(number, date, List.of());
 	}
 
 	public Invoice(Long number, List<WorkOrder> workOrders) {
@@ -59,6 +57,7 @@ public class Invoice extends BaseEntity{
 		// store the number
 		// store a copy of the date
 		// add every work order calling addWorkOrder( w )
+		super();
 		ArgumentChecks.isNotNull(number);
 		ArgumentChecks.isNotNull(date);
 		ArgumentChecks.isNotNull(workOrders);
@@ -72,16 +71,17 @@ public class Invoice extends BaseEntity{
 	 * Computes amount and vat (vat depends on the date)
 	 */
 	private void computeAmount() {
-		LocalDate JULY_1_2012 = LocalDate.of(2012, 7, 1);
-		vat = date.isAfter(JULY_1_2012) ? 0.21 : 0.18;
-			
-		amount = 0L;
-		for (WorkOrder w : workOrders) {
-			amount += w.getAmount();
+		if (date.isBefore(LocalDate.of(2012, 7, 1))) {
+			vat = 18.0;
+		} else {
+			vat = 21.0;
 		}
-		double iva = amount * vat;
-		amount += iva;
-		amount = Round.twoCents(amount);
+		this.amount = 0;
+		for (WorkOrder o : workOrders) {
+			this.amount += o.getAmount();
+		}
+		this.amount = this.amount + this.amount * vat * 0.01;
+		this.amount = Round.twoCents(this.amount);
 	}
 
 	/**
@@ -163,31 +163,6 @@ public class Invoice extends BaseEntity{
 
 	public InvoiceStatus getStatus() {
 		return status;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((number == null) ? 0 : number.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Invoice other = (Invoice) obj;
-		if (number == null) {
-			if (other.number != null)
-				return false;
-		} else if (!number.equals(other.number))
-			return false;
-		return true;
 	}
 
 	@Override

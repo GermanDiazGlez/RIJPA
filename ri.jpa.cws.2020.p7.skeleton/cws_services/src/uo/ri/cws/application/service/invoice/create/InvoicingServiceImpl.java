@@ -22,27 +22,33 @@ public class InvoicingServiceImpl implements InvoicingService {
 	}
 
 	@Override
-	public List<InvoicingWorkOrderDto> findWorkOrdersByClientDni(String dni)
-			throws BusinessException {
-		throw new RuntimeException("Not yet implemented");
+	public List<InvoicingWorkOrderDto> findWorkOrdersByClientDni(String dni) throws BusinessException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public Optional<InvoiceDto> findInvoice(Long number)
-			throws BusinessException {
-		throw new RuntimeException("Not yet implemented");
+	public List<InvoicingWorkOrderDto> findWorkOrdersByPlateNumber(String plate) throws BusinessException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public List<PaymentMeanDto> findPayMeansByClientDni(String dni)
-			throws BusinessException {
-		throw new RuntimeException("Not yet implemented");
+	public Optional<InvoiceDto> findInvoiceByNumber(Long number) throws BusinessException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void settleInvoice(String invoiceId, Map<Long, Double> charges)
-			throws BusinessException {
-		throw new RuntimeException("Not yet implemented");
+	public List<PaymentMeanDto> findPayMeansByClientDni(String dni) throws BusinessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void settleInvoice(String invoiceId, Map<String, Double> charges) throws BusinessException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

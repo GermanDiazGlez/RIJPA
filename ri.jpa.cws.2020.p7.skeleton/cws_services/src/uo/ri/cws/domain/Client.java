@@ -3,16 +3,20 @@ package uo.ri.cws.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import alb.util.assertion.ArgumentChecks;
 import uo.ri.cws.domain.base.BaseEntity;
 
 @Entity
+@Table(name = "TCLIENTS")
 public class Client extends BaseEntity{
 	@Column(unique = true) private String dni;
+	@Basic(optional = false)// no puede ser null
 	private String name;
 	private String surname;
 	private String email;
@@ -70,31 +74,6 @@ public class Client extends BaseEntity{
 
 	public void setAddress(Address address) {
 		this.address = address;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((dni == null) ? 0 : dni.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Client other = (Client) obj;
-		if (dni == null) {
-			if (other.dni != null)
-				return false;
-		} else if (!dni.equals(other.dni))
-			return false;
-		return true;
 	}
 
 	@Override

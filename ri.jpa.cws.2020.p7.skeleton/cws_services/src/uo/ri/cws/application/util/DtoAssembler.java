@@ -1,5 +1,6 @@
 package uo.ri.cws.application.util;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,9 +9,18 @@ import uo.ri.cws.application.service.client.ClientCrudService.ClientDto;
 import uo.ri.cws.application.service.invoice.InvoicingService.CardDto;
 import uo.ri.cws.application.service.invoice.InvoicingService.CashDto;
 import uo.ri.cws.application.service.invoice.InvoicingService.InvoiceDto;
+import uo.ri.cws.application.service.invoice.InvoicingService.InvoicingWorkOrderDto;
 import uo.ri.cws.application.service.invoice.InvoicingService.PaymentMeanDto;
 import uo.ri.cws.application.service.invoice.InvoicingService.VoucherDto;
 import uo.ri.cws.application.service.mechanic.MechanicCrudService.MechanicDto;
+import uo.ri.cws.application.service.spare.OrdersService.OrderDto;
+import uo.ri.cws.application.service.spare.OrdersService.OrderDto.OrderLineDto;
+import uo.ri.cws.application.service.spare.OrdersService.OrderDto.OrderedProviderDto;
+import uo.ri.cws.application.service.spare.OrdersService.OrderDto.OrderedSpareDto;
+import uo.ri.cws.application.service.spare.ProvidersCrudService.ProviderDto;
+import uo.ri.cws.application.service.spare.SparePartCrudService.SparePartDto;
+import uo.ri.cws.application.service.spare.SparePartReportService.SparePartReportDto;
+import uo.ri.cws.application.service.spare.SuppliesCrudService.SupplyDto;
 import uo.ri.cws.application.service.vehicle.VehicleCrudService.VehicleDto;
 import uo.ri.cws.application.service.vehicletype.VehicleTypeCrudService.VehicleTypeDto;
 import uo.ri.cws.application.service.workorder.WorkOrderCrudService.WorkOrderDto;
@@ -19,7 +29,12 @@ import uo.ri.cws.domain.Client;
 import uo.ri.cws.domain.CreditCard;
 import uo.ri.cws.domain.Invoice;
 import uo.ri.cws.domain.Mechanic;
+import uo.ri.cws.domain.Order;
+import uo.ri.cws.domain.OrderLine;
 import uo.ri.cws.domain.PaymentMean;
+import uo.ri.cws.domain.Provider;
+import uo.ri.cws.domain.SparePart;
+import uo.ri.cws.domain.Supply;
 import uo.ri.cws.domain.Vehicle;
 import uo.ri.cws.domain.VehicleType;
 import uo.ri.cws.domain.Voucher;
@@ -198,6 +213,165 @@ public class DtoAssembler {
 		return list.stream()
 				.map( a -> toDto( a ) )
 				.collect( Collectors.toList() );
+	}
+
+	public static OrderDto toDto(Order o) {
+		OrderDto dto = new OrderDto();
+
+		dto.id = o.getId();
+		dto.version = o.getVersion();
+
+		dto.code = o.getCode();
+		dto.orderedDate = o.getOrderedDate();
+		dto.receptionDate = o.getReceptionDate();
+		dto.status = o.getStatus();
+		dto.amount = o.getAmount();
+
+		for(OrderLine line: o.getOrderLines() ) {
+			dto.lines.add( toDto( line ) );
+		}
+
+		dto.provider = toOrderedProviderDto( o.getProvider() );
+
+		return dto;
+	}
+
+	public static OrderLineDto toDto(OrderLine line) {
+		OrderLineDto dto = new OrderLineDto();
+
+		dto.quantity = line.getQuantity();
+		dto.price = line.getPrice();
+		dto.sparePart = toOrderedSpareDto( line.getSparePart() );
+
+		return dto;
+	}
+
+	public static OrderedSpareDto toOrderedSpareDto(SparePart s) {
+		OrderedSpareDto dto = new OrderedSpareDto();
+
+		dto.id = s.getId();
+		dto.code = s.getCode();
+		dto.description = s.getDescription();
+
+		return dto;
+	}
+
+	public static OrderedProviderDto toOrderedProviderDto(Provider p) {
+		OrderedProviderDto dto = new OrderedProviderDto();
+
+		dto.id = p.getId();
+		dto.name = p.getName();
+		dto.nif = p.getNif();
+
+		return dto;
+	}
+
+	public static List<OrderDto> toOrdersDtoList(List<Order> list) {
+		return list.stream()
+				.map( a -> toDto( a ) )
+				.collect( Collectors.toList() );
+	}
+
+	public static ProviderDto toDto(Provider p) {
+		ProviderDto dto = new ProviderDto();
+		dto.id = p.getId();
+		dto.version = p.getVersion();
+
+		dto.nif = p.getNif();
+		dto.name = p.getName();
+		dto.email = p.getEmail();
+		dto.phone = p.getPhone();
+
+		return dto;
+	}
+
+	public static List<ProviderDto> toProvidersDtoList(List<Provider> list) {
+		return list.stream()
+				.map( a -> toDto( a ) )
+				.collect( Collectors.toList() );
+	}
+
+	public static SparePartDto toDto(SparePart sp) {
+		SparePartDto dto = new SparePartDto();
+		dto.id = sp.getId();
+		dto.version = sp.getVersion();
+
+		dto.code = sp.getCode();
+		dto.description = sp.getDescription();
+		dto.price = sp.getPrice();
+		dto.stock = sp.getStock();
+		dto.minStock = sp.getMinStock();
+		dto.maxStock = sp.getMaxStock();
+
+		return dto;
+	}
+
+	public static SparePartReportDto toSpareReportDto(SparePart sp) {
+		SparePartReportDto dto = new SparePartReportDto();
+		dto.id = sp.getId();
+		dto.version = sp.getVersion();
+
+		dto.code = sp.getCode();
+		dto.description = sp.getDescription();
+		dto.price = sp.getPrice();
+		dto.stock = sp.getStock();
+		dto.minStock = sp.getMinStock();
+		dto.maxStock = sp.getMaxStock();
+
+		// this will be better with a query
+		dto.totalUnitsSold = sp.getTotalUnitsSold();
+
+		return dto;
+	}
+
+	public static List<SparePartReportDto> toSparePartRepoDtoList(
+			List<SparePart> list) {
+		return list.stream()
+				.map( a -> toSpareReportDto( a ) )
+				.collect( Collectors.toList() );
+	}
+
+	public static SupplyDto toDto(Supply s) {
+		SupplyDto dto = new SupplyDto();
+		dto.id = s.getId();
+		dto.version = s.getVersion();
+
+		dto.provider.id = s.getProvider().getId();
+		dto.provider.nif = s.getProvider().getNif();
+		dto.provider.name = s.getProvider().getName();
+
+		dto.sparePart.id = s.getSparePart().getId();
+		dto.sparePart.code = s.getSparePart().getCode();
+		dto.sparePart.description = s.getSparePart().getDescription();
+
+		dto.price = s.getPrice();
+		dto.deliveryTerm = s.getDeliveryTerm();
+		return dto;
+	}
+
+	public static List<SupplyDto> toSupplyDtoList(List<Supply> list) {
+		return list.stream()
+				.map( a -> toDto( a ) )
+				.collect( Collectors.toList() );
+	}
+
+	public static List<InvoicingWorkOrderDto> toInvoicingWorkOrderDtoList(
+			List<WorkOrder> list) {
+		return list.stream()
+				.map( a -> toInvoicingWorkOrderDto( a ) )
+				.collect( Collectors.toList() );
+	}
+
+	private static InvoicingWorkOrderDto toInvoicingWorkOrderDto(WorkOrder w) {
+		InvoicingWorkOrderDto dto = new InvoicingWorkOrderDto();
+
+		dto.id = w.getId();
+		dto.description = w.getDescription();
+		dto.date = w.getDate();
+		dto.status = w.getStatus().toString();
+		dto.total = w.getAmount();
+
+		return dto;
 	}
 
 }

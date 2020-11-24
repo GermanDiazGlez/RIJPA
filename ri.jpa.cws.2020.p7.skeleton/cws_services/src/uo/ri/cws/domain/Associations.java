@@ -32,15 +32,13 @@ public class Associations {
 
 	public static class Pay {
 
-		public static void link(Client client, PaymentMean pm) {
+		public static void link(PaymentMean pm, Client client) {
 			pm._setClient(client);
 			client._getPaymentMeans().add(pm);
 		}
 
 		public static void unlink(Client client, PaymentMean pm) {
-			System.out.println("Metodos de pago de un cliente antes: " + client._getPaymentMeans());
 			client._getPaymentMeans().remove(pm);
-			System.out.println("Metodos de pago de un cliente despues: " + client._getPaymentMeans());
 			pm._setClient(null);
 		}
 
@@ -157,5 +155,43 @@ public class Associations {
 		}
 
 	}
+	
+	public static class Deliver {
+
+		public static void link(Provider provider, Order order) {
+			order._setProvider(provider);
+			provider._getOrders().add(order);
+		}
+		
+		public static void unlink(Provider provider, Order order) {
+			provider._getOrders().remove(order);
+			order._setProvider(null);
+		}
+	}
+	
+	
+	public static class Supplies {
+
+		public static void link(SparePart sparePart, Supply supply, Provider provider) {
+			supply._setSparePart(sparePart);
+			supply._setProvider(provider);
+
+			provider._getSupplies().add(supply);
+			sparePart._getSupplies().add(supply);
+		}
+
+		public static void unlink(Supply supply) {
+			SparePart spare = supply.getSparePart();
+			Provider provider = supply.getProvider();
+			
+			spare._getSupplies().remove(supply);
+			provider._getSupplies().remove(supply);
+			
+			supply._setProvider(null);
+			supply._setSparePart(null);
+		}
+
+	}
+	
 
 }

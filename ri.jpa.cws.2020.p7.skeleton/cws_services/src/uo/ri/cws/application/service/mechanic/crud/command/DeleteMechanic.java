@@ -1,11 +1,15 @@
 package uo.ri.cws.application.service.mechanic.crud.command;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import java.util.Optional;
 
+import uo.ri.conf.Factory;
+import uo.ri.cws.application.repository.MechanicRepository;
 import uo.ri.cws.application.service.BusinessException;
+import uo.ri.cws.application.util.BusinessChecks;
+import uo.ri.cws.application.util.command.Command;
+import uo.ri.cws.domain.Mechanic;
 
-public class DeleteMechanic implements Command<>{
+public class DeleteMechanic implements Command<Void> {
 
 	private String mechanicId;
 
@@ -16,8 +20,6 @@ public class DeleteMechanic implements Command<>{
 	public Void execute() throws BusinessException {
 
 		MechanicRepository repo = Factory.repository.forMechanic();
-		
-		
 		
 		Optional<Mechanic> om = repo.findById(mechanicId);
 		BusinessChecks.isTrue(om.isPresent(),"Mechanic does not exist");
